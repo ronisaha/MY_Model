@@ -8,12 +8,12 @@ application.
 Methods
 =========
 
-* findBy($field, $value)
-* findAllBy($field, $value)
+* findBy($field, $value, $fields, $order)
+* findAllBy($field, $value, $fields, $order, $start, $limit)
 * findAll($conditions, $fields, $order, $start, $limit)
 * find($conditions, $fields, $order)
 * field($conditions, $name, $fields, $order)
 * findCount($conditions)
 * insert($data)
-* update($data, $id)
-* remove($id)
+* update($data, $id, $conditions)
+* remove($id, $conditions)
