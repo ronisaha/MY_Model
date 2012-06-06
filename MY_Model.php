@@ -14,21 +14,49 @@
  */
 class MY_Model extends CI_Model
 {
-    protected $table=null;
-    protected $primaryKey=null;
+    /**
+     * @var string name of table
+     */
+    protected $table=NULL;
+    /**
+     * @var string the primary key
+     */
+    protected $primaryKey=NULL;
 
+    /**
+     * @var array list of fields
+     */
     private $fields = array();
-    private $numRows = null;
-    private $insertId = null;
-    private $affectedRows = null;
-    private $returnArray = true;
+    /**
+     * @var int returned number of rows of a query
+     */
+    private $numRows = NULL;
+    /**
+     * @var int|string the id of last inserted data
+     */
+    private $insertId = NULL;
+    /**
+     * @var null
+     */
+    private $affectedRows = NULL;
+    /**
+     * @var bool set the return type of query, return as array if true or return object if false
+     */
+    private $returnArray = TRUE;
 
+    /**
+     * Initialize the model and bind with a table if the value of table found!
+     */
     public function __construct()
     {
         parent::__construct();
-        ($this->table!=null) AND $this->loadTable($this->table,$this->primaryKey);
+        ($this->table!=NULL) AND $this->loadTable($this->table,$this->primaryKey);
     }
 
+    /**
+     * @param string $table
+     * @param string $primaryKey
+     */
     public function loadTable($table, $primaryKey = 'id')
     {
         $this->table = $table;
@@ -36,25 +64,34 @@ class MY_Model extends CI_Model
         $this->fields = $this->db->list_fields($table);
     }
 
-    public function findAll($conditions = null, $fields = '*', $order = null, $start = 0, $limit = null)
+    /**
+     * @param null|string|array     $conditions
+     * @param string                $fields
+     * @param null|string|array     $order
+     * @param int                   $start
+     * @param null|int              $limit
+     *
+     * @return mixed
+     */
+    public function findAll($conditions = NULL, $fields = '*', $order = NULL, $start = 0, $limit = NULL)
     {
-        if ($conditions != null)  {
+        if ($conditions != NULL)  {
             if(is_array($conditions)) {
                 $this->db->where($conditions);
             } else {
-                $this->db->where($conditions, null, false);
+                $this->db->where($conditions, NULL, FALSE);
             }
         }
 
-        if ($fields != null)  {
+        if ($fields != NULL)  {
             $this->db->select($fields);
         }
 
-        if ($order != null) {
+        if ($order != NULL) {
             $this->db->orderby($order);
         }
 
-        if ($limit != null)  {
+        if ($limit != NULL)  {
             $this->db->limit($limit, $start);
         }
 
@@ -64,18 +101,31 @@ class MY_Model extends CI_Model
         return ($this->returnArray) ? $query->result_array() : $query->result();
     }
 
-    public function find($conditions = null, $fields = '*', $order = null)
+    /**
+     * @param null|string|array     $conditions
+     * @param string                $fields
+     * @param null|string|array     $order
+     * @return bool
+     */
+    public function find($conditions = NULL, $fields = '*', $order = NULL)
     {
         $data = $this->findAll($conditions, $fields, $order, 0, 1);
 
         if ($data) {
             return $data[0];
         } else  {
-            return false;
+            return FALSE;
         }
     }
 
-    public function field($conditions = null, $name, $fields = '*', $order = null)
+    /**
+     * @param null   $conditions
+     * @param        $name
+     * @param string $fields
+     * @param null   $order
+     * @return bool
+     */
+    public function field($conditions = NULL, $name, $fields = '*', $order = NULL)
     {
         $data = $this->findAll($conditions, $fields, $order, 0, 1);
 
@@ -86,28 +136,36 @@ class MY_Model extends CI_Model
             }
         }
 
-        return false;
+        return FALSE;
     }
 
-    public function findCount($conditions = null)
+    /**
+     * @param null $conditions
+     * @return bool
+     */
+    public function findCount($conditions = NULL)
     {
-        $data = $this->findAll($conditions, 'COUNT(*) AS count', null, 0, 1);
+        $data = $this->findAll($conditions, 'COUNT(*) AS count', NULL, 0, 1);
 
         if ($data) {
             return $data[0]['count'];
         } else {
-            return false;
+            return FALSE;
         }
     }
 
-    public function insert($data = null)
+    /**
+     * @param null $data
+     * @return bool|null
+     */
+    public function insert($data = NULL)
     {
-        if ($data == null) {
-            return false;
+        if ($data == NULL) {
+            return FALSE;
         }
 
         foreach ($data as $key => $value) {
-            if (array_search($key, $this->fields) === false) {
+            if (array_search($key, $this->fields) === FALSE) {
                 unset($data[$key]);
             }
         }
@@ -118,26 +176,32 @@ class MY_Model extends CI_Model
         return $this->insertId;
     }
 
-    public function update($data = null, $id = null,$conditions=null)
+    /**
+     * @param null $data
+     * @param null $id
+     * @param null $conditions
+     * @return bool|null
+     */
+    public function update($data = NULL, $id = NULL,$conditions=NULL)
     {
-        $this->affectedRows=null;
+        $this->affectedRows=NULL;
 
-        if ($data == null) {
-            return false;
+        if ($data == NULL) {
+            return FALSE;
         }
 
         foreach ($data as $key => $value) {
-            if (array_search($key, $this->fields) === false) {
+            if (array_search($key, $this->fields) === FALSE) {
                 unset($data[$key]);
             }
         }
 
-        if ($id !== null) {
+        if ($id !== NULL) {
             $this->db->where($this->primaryKey, $id);
             $this->db->update($this->table, $data);
             $this->affectedRows = $this->db->affected_rows();
             return $id;
-        } elseif($conditions!=null){
+        } elseif($conditions!=NULL){
             $this->db->where($conditions);
             $this->db->update($this->table, $data);
             $this->affectedRows = $this->db->affected_rows();
@@ -149,18 +213,28 @@ class MY_Model extends CI_Model
         }
     }
 
-    public function remove($id = null,$conditions=null)
+    /**
+     * @param null $id
+     * @param null $conditions
+     * @return bool
+     */
+    public function remove($id = NULL,$conditions=NULL)
     {
-        if ($id != null){
+        if ($id != NULL){
             $this->db->where($this->primaryKey, $id);
-        }elseif($conditions!=null) {
+        }elseif($conditions!=NULL) {
             $this->db->where($conditions);
         }else{
-            return false;
+            return FALSE;
         }
         return $this->db->delete($this->table);
     }
 
+    /**
+     * @param $method
+     * @param $args
+     * @return mixed
+     */
     public function __call ($method, $args)
     {
         $watch = array('findBy','findAllBy');
@@ -173,7 +247,43 @@ class MY_Model extends CI_Model
         }
     }
 
-    public function findBy($field, $value,$fields='*',$order=null)
+    /**
+     * Returns a property value based on its name.
+     * Do not call this method. This is a PHP magic method that we override
+     * to allow using the following syntax to read a property or obtain event handlers:
+     * <pre>
+     * $value=$model->propertyName;
+     * </pre>
+     * @param string $name the property name
+     * @return mixed the property value
+     * @see __set
+     */
+    public function __get($name)
+    {
+        $getter='get'.$name;
+        if(method_exists($this,$getter))
+            return $this->$getter();
+        else if(isset($this->$name))
+            return $this->$name;
+
+        $trace = debug_backtrace();
+        trigger_error(
+            'Undefined property : ' . $name .
+                ' in ' . $trace[0]['file'] .
+                ' on line ' . $trace[0]['line'],
+            E_USER_NOTICE);
+        return null;
+    }
+
+
+    /**
+     * @param        $field
+     * @param        $value
+     * @param string $fields
+     * @param null   $order
+     * @return bool
+     */
+    public function findBy($field, $value,$fields='*',$order=NULL)
     {
         $arg_list=array();
         if(is_array($value)){
@@ -187,7 +297,16 @@ class MY_Model extends CI_Model
         return $this->find($where,$fields,$order);
     }
 
-    public function findAllBy($field, $value, $fields='*',$order=null,$start=0,$limit=null)
+    /**
+     * @param        $field
+     * @param        $value
+     * @param string $fields
+     * @param null   $order
+     * @param int    $start
+     * @param null   $limit
+     * @return mixed
+     */
+    public function findAllBy($field, $value, $fields='*',$order=NULL,$start=0,$limit=NULL)
     {
         $arg_list=array();
         if(is_array($value)){
@@ -203,46 +322,75 @@ class MY_Model extends CI_Model
         return $this->findAll($where,$fields,$order,$start,$limit);
     }
 
+    /**
+     * @param $sql
+     * @return mixed
+     */
     public function executeQuery($sql)
     {
         return $this->db->query($sql);
     }
 
+    /**
+     * @return mixed
+     */
     public function getLastQuery()
     {
         return $this->db->last_query();
     }
 
+    /**
+     * @param $data
+     * @return mixed
+     */
     public function getInsertString($data)
     {
         return $this->db->insert_string($this->table, $data);
     }
 
+    /**
+     * @return array
+     */
     public function getFields()
     {
         return $this->fields;
     }
 
+    /**
+     * @return null
+     */
     public function getNumRows()
     {
         return $this->numRows;
     }
 
+    /**
+     * @return null
+     */
     public function getInsertId()
     {
         return $this->insertId;
     }
 
+    /**
+     * @return null
+     */
     public function getAffectedRows()
     {
         return $this->affectedRows;
     }
 
+    /**
+     * @param $primaryKey
+     */
     public function setPrimaryKey($primaryKey)
     {
         $this->primaryKey = $primaryKey;
     }
 
+    /**
+     * @param $returnArray
+     */
     public function setReturnArray($returnArray)
     {
         $this->returnArray = $returnArray;
