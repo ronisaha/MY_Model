@@ -9,7 +9,7 @@
  *
  * @author Md Emran Hasan <phpfour@gmail.com>
  * @author Roni Kumar Saha <roni.cse@gmail.com>
- * @version 1.2
+ * @version 1.3
  * @since 2012
  */
 class MY_Model extends CI_Model
@@ -88,7 +88,7 @@ class MY_Model extends CI_Model
         }
 
         if ($order != NULL) {
-            $this->db->orderby($order);
+            $this->order_by($order);
         }
 
         if ($limit != NULL)  {
@@ -186,6 +186,10 @@ class MY_Model extends CI_Model
     {
         $this->affectedRows=NULL;
 
+        if($id==NULL && $conditions==NULL && $data!=NULL){  //THis is an insert operation
+            return $this->insert($data);
+        }
+
         if ($data == NULL) {
             return FALSE;
         }
@@ -200,17 +204,12 @@ class MY_Model extends CI_Model
             $this->db->where($this->primaryKey, $id);
             $this->db->update($this->table, $data);
             $this->affectedRows = $this->db->affected_rows();
-            return $id;
         } elseif($conditions!=NULL){
             $this->db->where($conditions);
             $this->db->update($this->table, $data);
             $this->affectedRows = $this->db->affected_rows();
-            return $id;
-        }else {
-            $this->db->insert($this->table, $data);
-            $this->insertId = $this->db->insert_id();
-            return $this->insertId;
         }
+        return $id;
     }
 
     /**
@@ -237,7 +236,7 @@ class MY_Model extends CI_Model
      */
     public function __call ($method, $args)
     {
-        $watch = array('findBy','findAllBy');
+        $watch = array('findBy','findAllBy','findFieldBy');
 
         foreach ($watch as $found) {
             if (stristr($method, $found)) {
@@ -272,7 +271,7 @@ class MY_Model extends CI_Model
                 ' in ' . $trace[0]['file'] .
                 ' on line ' . $trace[0]['line'],
             E_USER_NOTICE);
-        return null;
+        return NULL;
     }
 
 
@@ -321,6 +320,61 @@ class MY_Model extends CI_Model
         $where = array($field => $value);
         return $this->findAll($where,$fields,$order,$start,$limit);
     }
+
+    /**
+     *
+     * @param        $field
+     * @param        $value
+     * @param string $fields
+     * @param null   $order
+     * @return mixed
+     */
+    public function findFieldBy($field, $value,$fields='*',$order=null){
+        $arg_list=array();
+        if(is_array($value)){
+            $arg_list=$value;
+            $value=$arg_list[0];
+        }
+        $fields = isset($arg_list[1])?$arg_list[1]:$fields;
+        $order = isset($arg_list[2])?$arg_list[2]:$order;
+        $where = array($field => $value);
+        return $this->field($where, $fields, $fields, $order);
+    }
+
+    /**
+     * call the ci->db->order_by method as per provided param
+     * The param can be string just like default order_by function expect
+     * or can be array with set of param!!
+     * <pre>
+     * $model->orderby('fieldname DESC');
+     * or
+     * $model->orderby(array('fieldname','DESC'));
+     * or
+     * $model->orderby(array(array('fieldname','DESC'),'fieldname DESC'));
+     * </pre>
+     * @param mixed(string|array) $orders
+     *
+     * @return bool
+     */
+    public function order_by($orders=NULL){
+        if ($orders == NULL) {
+            return FALSE;
+        }
+        if(is_array($orders)){   //Multiple order by provided!
+            //check if we got single order by passed as array!!
+            if(isset($orders[1]) && (strtolower($orders[1])=='asc' || strtolower($orders[1])=='desc' || strtolower($orders[1]) == 'random')){
+                $this->db->order_by($orders[0],$orders[1]);
+                return;
+            }
+            foreach($orders as $order){
+                $this->order_by($order);
+            }
+            return;
+        }
+        $this->db->order_by($orders); //its a string just call db order_by
+        return TRUE;
+    }
+
 
     /**
      * @param $sql
