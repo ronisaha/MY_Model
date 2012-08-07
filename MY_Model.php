@@ -9,7 +9,7 @@
  *
  * @author Md Emran Hasan <phpfour@gmail.com>
  * @author Roni Kumar Saha <roni.cse@gmail.com>
- * @version 1.3
+ * @version 1.4
  * @since 2012
  */
 class MY_Model extends CI_Model
@@ -95,9 +95,19 @@ class MY_Model extends CI_Model
             $this->db->limit($limit, $start);
         }
 
+        return $this->getResult();
+    }
+
+
+    /**
+     * Get the query result built
+     * Helpful if you built your own query then just call this function to get the result
+     *
+     * @return mixed(array|object) based on the returnArray value
+     */
+    public function getResult(){
         $query = $this->db->get($this->table);
         $this->numRows = $query->num_rows();
-
         return ($this->returnArray) ? $query->result_array() : $query->result();
     }
 
@@ -329,7 +339,7 @@ class MY_Model extends CI_Model
      * @param null   $order
      * @return mixed
      */
-    public function findFieldBy($field, $value,$fields='*',$order=null){
+    public function findFieldBy($field, $value,$fields='*',$order=NULL){
         $arg_list=array();
         if(is_array($value)){
             $arg_list=$value;

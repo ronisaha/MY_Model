@@ -17,3 +17,5 @@ Methods
 * insert($data)
 * update($data, $id, $conditions)
 * remove($id, $conditions)
+* order_by($orders)
+* getResult()
