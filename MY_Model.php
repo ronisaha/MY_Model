@@ -237,7 +237,7 @@ class MY_Model extends CI_Model
      *
      * @return bool
      */
-    public function on_duplicate_update($data = NULL, $update = NULL)
+    public function onDuplicateUpdate($data = NULL, $update = NULL)
     {
         if (is_null($data)) {
             return FALSE;

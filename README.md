@@ -16,6 +16,8 @@ Methods
 * findCount($conditions)
 * insert($data)
 * update($data, $id, $conditions)
+* onDuplicateUpdate($data, $update)
 * remove($id, $conditions)
+* remove_in($values, $field)
 * order_by($orders)
 * getResult()
