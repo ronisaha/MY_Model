@@ -10,8 +10,7 @@
  *
  * @author  Md Emran Hasan <phpfour@gmail.com>
  * @author  Roni Kumar Saha <roni.cse@gmail.com>
- * @version 1.4
- * @since   2012
+ * @version 1.5
  */
 
 class MY_Model extends CI_Model
@@ -28,23 +27,28 @@ class MY_Model extends CI_Model
     /**
      * @var array list of fields
      */
-    private $fields = array();
+    protected $fields = array();
     /**
      * @var int returned number of rows of a query
      */
-    private $numRows = NULL;
+    protected $numRows = NULL;
     /**
      * @var int|string the id of last inserted data
      */
-    private $insertId = NULL;
+    protected $insertId = NULL;
     /**
      * @var null
      */
-    private $affectedRows = NULL;
+    protected $affectedRows = NULL;
     /**
      * @var bool set the return type of query, return as array if true or return object if false
      */
-    private $returnArray = TRUE;
+    protected $returnArray = TRUE;
+
+    /**
+     * @var \CI_Controller the db object
+     */
+    protected $CI = NULL;
 
     /**
      * Initialize the model and bind with a table if the value of table found!
@@ -52,6 +56,8 @@ class MY_Model extends CI_Model
     public function __construct()
     {
         parent::__construct();
+        $this->CI = &get_instance();
+
         ($this->table != NULL) AND $this->loadTable($this->table, $this->primaryKey);
     }
 
@@ -254,7 +260,7 @@ class MY_Model extends CI_Model
      *
      * @return string
      */
-    private function _duplicate_insert_sql($table, $values, $update = NULL)
+    protected function _duplicate_insert_sql($table, $values, $update = NULL)
     {
         $updateStr = array();
         $keyStr    = array();
@@ -357,8 +363,11 @@ class MY_Model extends CI_Model
         $getter = 'get' . $name;
         if (method_exists($this, $getter))
             return $this->$getter();
-        else if (isset($this->$name))
+        elseif (isset($this->$name))
             return $this->$name;
+        elseif(isset($this->CI->$name)){
+            return $this->CI->$name;
+        }
 
         $trace = debug_backtrace();
         trigger_error(
@@ -517,7 +526,7 @@ class MY_Model extends CI_Model
     }
 
     /**
-     * @return null
+     * @return int
      */
     public function getNumRows()
     {
@@ -525,7 +534,7 @@ class MY_Model extends CI_Model
     }
 
     /**
-     * @return null
+     * @return null|int
      */
     public function getInsertId()
     {
@@ -533,7 +542,7 @@ class MY_Model extends CI_Model
     }
 
     /**
-     * @return null
+     * @return null|mix
      */
     public function getAffectedRows()
     {
