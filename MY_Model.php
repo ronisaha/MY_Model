@@ -111,12 +111,16 @@ class MY_Model extends CI_Model
      * Get the query result built
      * Helpful if you built your own query then just call this function to get the result
      *
+     * @param null|string $table_name
+     *
      * @return mixed(array|object) based on the returnArray value
      */
-    public function getResult()
+    public function getResult($table_name=null)
     {
-        $query         = $this->db->get($this->table);
+        $table=$table_name==null?$this->table:$table_name;
+        $query = $this->db->get($table);
         $this->numRows = $query->num_rows();
+
         return ($this->returnArray) ? $query->result_array() : $query->result();
     }
 
