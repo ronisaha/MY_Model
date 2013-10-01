@@ -1,7 +1,6 @@
 {
     "name": "xiidea/my-model",
     "version": "dev-master",
-    "type": "codeigniter-core-library",
     "description": "An extension of CodeIgniter's base Model class for providing a couple handy methods",
     "keywords": ["CI_Model", "Codeigniter"],
     "license": "MIT",
@@ -16,7 +15,7 @@
         }
     ],
     "minimum-stability": "dev",
-    "extra": {
-        "installer-name": "MY_Model"
+    "autoload": {
+        "classmap": ["MY_Model.php"]
     }
 }
