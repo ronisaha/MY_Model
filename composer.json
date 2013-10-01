@@ -3,7 +3,7 @@
     "version": "dev-master",
     "type": "codeigniter-core-library",
     "description": "An extension of CodeIgniter's base Model class for providing a couple handy methods",
-    "keywords": ["phpfour/MY_Model", "Codeigniter"],
+    "keywords": ["CI_Model", "Codeigniter"],
     "license": "MIT",
     "authors": [
         {
