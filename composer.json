@@ -1,0 +1,22 @@
+{
+    "name": "xiidea/my-model",
+    "version": "dev-master",
+    "type": "codeigniter-core-library",
+    "description": "An extension of CodeIgniter's base Model class for providing a couple handy methods",
+    "keywords": ["phpfour/MY_Model", "Codeigniter"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Md Emran Hasan",
+            "email": "phpfour@gmail.com"
+        },
+        {
+            "name": "Roni Saha",
+            "email": "roni.cse@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "extra": {
+        "installer-name": "MY_Model"
+    }
+}
